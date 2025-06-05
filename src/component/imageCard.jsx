@@ -1,10 +1,10 @@
 import { Card, Typography, Image, Col, Row, Button, Space, Layout } from "antd";
 
 import bgImage from "../assets/header.avif";
-import saylaniImage from "../assets/Saylani.png";
 import facebook from "../assets/facebook.png";
 import instagram from "../assets/instagram.png";
 import youtube from "../assets/youtube.png";
+import saylaniImage from "../assets/Saylani.png";
 import { FaUserGraduate } from "react-icons/fa";
 
 const { Title, Text } = Typography;
