@@ -4,7 +4,7 @@ import bgImage from "../assets/header.avif";
 import facebook from "../assets/facebook.png";
 import instagram from "../assets/instagram.png";
 import youtube from "../assets/youtube.png";
-import saylaniImage from "../assets/Saylani.png";
+import saylaniImage from "../assets/saylani.png";
 import { FaUserGraduate } from "react-icons/fa";
 
 const { Title, Text } = Typography;
