@@ -1,6 +1,6 @@
 import { Card, Typography, Image, Col, Row, Button, Space, Layout } from "antd";
 
-import bgImage from "../assets/header.AVIF";
+import bgImage from "../assets/header.avif";
 import saylaniImage from "../assets/Saylani.png";
 import facebook from "../assets/facebook.png";
 import instagram from "../assets/instagram.png";
