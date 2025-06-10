@@ -15,7 +15,7 @@ export const customAntdTheme = {
     Tabs: {
       colorPrimary: "#8bc34a",
 
-      colorText: "#0000ff",
+      colorText: "#004687",
     },
     Input: {
       colorBorder: "#8bc34a",

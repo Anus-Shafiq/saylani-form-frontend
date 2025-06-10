@@ -33,7 +33,7 @@ var __awaiter =
   };
 import React from "react";
 import { useState } from "react";
-
+import axios from "axios";
 import {
   Form,
   Input,
@@ -78,16 +78,92 @@ const RegistrationForm = () => {
     </button>
   );
   const [form] = Form.useForm();
-  const onFinish = (values) => {
-    const formattedDOB = values.dob?.format("DD-MM-YYYY");
-    const finalValues = {
-      ...values,
-      dob: formattedDOB,
-    };
-    console.log("Submitted values:", finalValues);
+
+  const onFinish = async (values) => {
+    const formDataToSend = new FormData();
+
+    // Format DOB
+    if (values.dob) {
+      values.dob = values.dob.format("YYYY-MM-DD");
+    }
+
+    for (const key in values) {
+      formDataToSend.append(key, values[key]);
+    }
+
+    if (fileList.length > 0 && fileList[0].originFileObj) {
+      formDataToSend.append("image", fileList[0].originFileObj);
+    }
+
+    try {
+      const response = await axios.post(
+        "http://localhost:5000//student/register",
+        formDataToSend,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
+
+      alert(response.data.message);
+    } catch (err) {
+      console.error(err);
+      alert("Submission failed");
+    }
 
     form.resetFields();
+    setFileList([]);
   };
+
+  const [formData, setFormData] = useState({
+    fullName: "",
+    fatherName: "",
+    cnic: "",
+    country: "",
+
+    course: "",
+    city: "",
+    phone: "",
+    email: "",
+    gender: "",
+    address: "",
+
+    qualification: "",
+    laptop: "",
+    computuerProficiency: "",
+    image: null,
+  });
+
+  const handleInput = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
+  const handleImage = ({ fileList }) => {
+    if (fileList.length > 0 && fileList[0].originFileObj) {
+      setFormData((prev) => ({
+        ...prev,
+        image: fileList[0].originFileObj,
+      }));
+    }
+  };
+  const handleSelect = (name, value) => {
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
+
+  const handleDateChange = (date, dateString) => {
+    setFormData((prev) => ({
+      ...prev,
+      dob: dateString,
+    }));
+  };
+
   return (
     <Form
       form={form}
@@ -103,7 +179,10 @@ const RegistrationForm = () => {
             rules={[{ required: true }]}
             required={false}
           >
-            <Select placeholder="Select country">
+            <Select
+              onChange={(value) => handleSelect("country", value)}
+              placeholder="Select country"
+            >
               <Option value="pakistan">Pakistan</Option>
             </Select>
           </Form.Item>
@@ -115,7 +194,10 @@ const RegistrationForm = () => {
             rules={[{ required: true }]}
             required={false}
           >
-            <Select placeholder="Select city">
+            <Select
+              onChange={(value) => handleSelect("city", value)}
+              placeholder="Select city"
+            >
               <Option value="karachi">Karachi</Option>
               <Option value="islamabad">Islamabad</Option>
               <Option value="lahore">Lahore</Option>
@@ -132,7 +214,10 @@ const RegistrationForm = () => {
             rules={[{ required: true }]}
             required={false}
           >
-            <Select placeholder="Select course or event">
+            <Select
+              onChange={(value) => handleSelect("course", value)}
+              placeholder="Select course or event"
+            >
               <Option value="graphic-design">Graphic Design</Option>
               <Option value="web-development">Web Development</Option>
               <Option value="video-animation">Video Animation</Option>
@@ -146,7 +231,10 @@ const RegistrationForm = () => {
             rules={[{ required: true }]}
             required={false}
           >
-            <Select placeholder="Select your computer proficiency">
+            <Select
+              onChange={(value) => handleSelect("computerProficiency", value)}
+              placeholder="Select your computer proficiency"
+            >
               <Option value="none">None</Option>
               <Option value="beginner">Beginner</Option>
               <Option value="intermediate">Intermediate</Option>
@@ -162,7 +250,7 @@ const RegistrationForm = () => {
             rules={[{ required: true }]}
             required={false}
           >
-            <Input />
+            <Input onChange={handleInput} placeholder="Full name" />
           </Form.Item>
         </Col>
         <Col xs={24} sm={24} md={12}>
@@ -172,7 +260,7 @@ const RegistrationForm = () => {
             rules={[{ required: true }]}
             required={false}
           >
-            <Input />
+            <Input onChange={handleInput} placeholder="Father name" />
           </Form.Item>
         </Col>
 
@@ -189,7 +277,7 @@ const RegistrationForm = () => {
             ]}
             required={false}
           >
-            <Input type="text" />
+            <Input onChange={handleInput} placeholder="Email" />
           </Form.Item>
         </Col>
         <Col xs={24} sm={24} md={12}>
@@ -205,7 +293,7 @@ const RegistrationForm = () => {
             ]}
             required={false}
           >
-            <Input />
+            <Input onChange={handleInput} placeholder="Phone" />
           </Form.Item>
         </Col>
 
@@ -222,7 +310,7 @@ const RegistrationForm = () => {
             ]}
             required={false}
           >
-            <Input />
+            <Input onChange={handleInput} placeholder="CNIC" />
           </Form.Item>
         </Col>
         <Col xs={24} sm={24} md={12}>
@@ -238,7 +326,10 @@ const RegistrationForm = () => {
             ]}
             required={false}
           >
-            <Input />
+            <Input
+              onChange={handleInput}
+              placeholder="Father's CNIC(optional)"
+            />
           </Form.Item>
         </Col>
 
@@ -249,7 +340,11 @@ const RegistrationForm = () => {
             required={false}
             rules={[{ required: CSSViewTransitionRule }]}
           >
-            <DatePicker style={{ width: "100%" }} />
+            <DatePicker
+              onChange={handleDateChange}
+              placeholder="mm/dd/yyyy"
+              style={{ width: "100%" }}
+            />
           </Form.Item>
         </Col>
         <Col xs={24} sm={24} md={12}>
@@ -259,7 +354,10 @@ const RegistrationForm = () => {
             required={false}
             rules={[{ required: true }]}
           >
-            <Select placeholder="Select gender">
+            <Select
+              onChange={(value) => handleSelect("gender", value)}
+              placeholder="Select gender"
+            >
               <Option value="male">Male</Option>
               <Option value="female">Female</Option>
               <Option value="other">Other</Option>
@@ -274,7 +372,7 @@ const RegistrationForm = () => {
             name="address"
             rules={[{ required: true }]}
           >
-            <Input />
+            <Input onChange={handleInput} placeholder="Address" />
           </Form.Item>
         </Col>
 
@@ -285,7 +383,10 @@ const RegistrationForm = () => {
             required={false}
             rules={[{ required: true }]}
           >
-            <Select placeholder="Last qualification">
+            <Select
+              onChange={(value) => handleSelect("qualification", value)}
+              placeholder="Last qualification"
+            >
               <Option value="matric">Matric</Option>
               <Option value="intermediate">Intermediate</Option>
               <Option value="underGraduate">UnderGraduate</Option>
@@ -302,7 +403,10 @@ const RegistrationForm = () => {
             required={false}
             rules={[{ required: true }]}
           >
-            <Select placeholder="Do you have a Laptop?">
+            <Select
+              onChange={(value) => handleSelect("laptop", value)}
+              placeholder="Do you have a Laptop?"
+            >
               <Option value="yes">Yes</Option>
               <Option value="no">No</Option>
             </Select>
@@ -313,18 +417,22 @@ const RegistrationForm = () => {
           <Form.Item
             required={false}
             label="Picture"
-            name="picture"
+            name="image"
             rules={[{ required: true }]}
           >
             <div style={{ display: "flex", gap: 16 }}>
               <Upload
                 accept="image/*"
-                action="https://660d2bd96ddfa2943b33731c.mockapi.io/api/upload"
                 listType="picture-card"
                 fileList={fileList}
+                preview={false}
                 onPreview={handlePreview}
-                onChange={handleChange}
-                style={{ outline: "none" }}
+                onChange={(e) => {
+                  handleChange(e);
+                  handleImage(e);
+                }}
+                showUploadList={{ showRemoveIcon: true }}
+                beforeUpload={() => false}
               >
                 {fileList.length >= 8 ? null : uploadButton}
               </Upload>
