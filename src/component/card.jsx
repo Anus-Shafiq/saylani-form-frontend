@@ -110,8 +110,8 @@ import {
 } from "@react-pdf/renderer";
 import ErrorBoundary from "../boundary/boundaryError";
 import QRCode from "qrcode";
+import { Button } from "antd";
 import smitLogo from "../assets/smit.png";
-import profilePic from "../assets/facebook.png";
 
 const styles = StyleSheet.create({
   page: { padding: 20, flexDirection: "row", flexWrap: "wrap" },
@@ -151,7 +151,7 @@ const styles = StyleSheet.create({
   },
 });
 
-const IDCardPDF = ({ qrCodeUrl }) => (
+const IDCardPDF = ({ user, qrCodeUrl }) => (
   <Document>
     <Page size="A4" style={styles.page}>
       {/* Front Side */}
@@ -162,18 +162,18 @@ const IDCardPDF = ({ qrCodeUrl }) => (
         </Text>
         <Image
           style={[styles.image, { border: "1pt solid green" }]}
-          src={profilePic}
+          src={user.image}
         />
-        <Text style={styles.title}>ANUS SHAFIQ</Text>
-        <Text style={styles.title}>Web and Mobile App Development</Text>
-        <Text style={styles.id}>WMA-253881</Text>
+        <Text style={styles.title}>{user.fullName}</Text>
+        <Text style={styles.title}>{user.course}</Text>
+        <Text style={styles.id}>{user.id}</Text>
       </View>
 
       {/* Back Side */}
       <View style={styles.cardBack}>
-        <Text style={styles.text}>Name: ANUS SHAFIQ</Text>
-        <Text style={styles.text}>Father Name: SHAFIQ AHMED</Text>
-        <Text style={styles.text}>CNIC: 421013782273</Text>
+        <Text style={styles.text}>Name: {user.fullName}</Text>
+        <Text style={styles.text}>Father Name: {user.fatherName}</Text>
+        <Text style={styles.text}>CNIC: {user.cnic}</Text>
         <Text style={styles.text}>Course: WMA BATCH (12)</Text>
         {qrCodeUrl && (
           <View style={{ width: "100%", alignItems: "center" }}>
@@ -200,22 +200,34 @@ const IDCardPDF = ({ qrCodeUrl }) => (
   </Document>
 );
 
-const PDFDownloadButton = () => {
+const PDFDownloadButton = ({ user }) => {
   const [qrCodeUrl, setQrCodeUrl] = useState("");
 
   useEffect(() => {
-    QRCode.toDataURL("WMA-253881", { width: 100 })
-      .then(setQrCodeUrl)
-      .catch(console.error);
-  }, []);
+    if (user) {
+      QRCode.toDataURL(user.id, { width: 100 })
+        .then(setQrCodeUrl)
+        .catch(console.error);
+    }
+  }, [user]);
 
   return qrCodeUrl ? (
     <ErrorBoundary>
       <PDFDownloadLink
-        document={<IDCardPDF qrCodeUrl={qrCodeUrl} />}
-        fileName="id-card.pdf"
+        document={<IDCardPDF user={user} qrCodeUrl={qrCodeUrl} />}
+        fileName={user.id}
       >
-        {({ loading }) => (loading ? "Download" : "Download")}
+        {({ loading }) => (
+          <Button
+            type="primary"
+            size="small"
+            style={{
+              boxShadow: "none",
+            }}
+          >
+            {loading ? "Download" : "Download"}
+          </Button>
+        )}
       </PDFDownloadLink>
     </ErrorBoundary>
   ) : (

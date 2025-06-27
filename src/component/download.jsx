@@ -1,22 +1,33 @@
-import {
-  Form,
-  Input,
-  Select,
-  DatePicker,
-  Upload,
-  Button,
-  Row,
-  Col,
-  Image,
-} from "antd";
+import { useState, useEffect } from "react";
+import { Form, Input, Button, Row, Col, message } from "antd";
+import axios from "axios";
 import DataTable from "./table";
 
 const DownloadForm = () => {
   const [form] = Form.useForm();
-  const onFinish = (values) => {
-    console.log(values);
+  const [data, setData] = useState([]);
+  const [cnic, setCnic] = useState("");
+  const [matchedUsers, setMatchedUsers] = useState([]);
+  const getUrl = import.meta.env.VITE_GET_API;
+  // Fetch data from API
+  useEffect(() => {
+    axios
+      .get(getUrl)
+      .then((res) => {
+        setData(res.data);
+      })
+      .catch((err) => console.error(err));
+  }, []);
 
-    form.resetFields();
+  const onFinish = (values) => {
+    const enteredCnic = values.cnic;
+    const matched = data.users.filter((user) => user.cnic === enteredCnic);
+
+    if (matched.length === 0) {
+      message.warning("No record found for the entered CNIC.");
+    }
+
+    setMatchedUsers(matched);
   };
   return (
     <>
@@ -48,8 +59,8 @@ const DownloadForm = () => {
                 SUBMIT
               </Button>
             </Form.Item>
-            <DataTable />
           </Form>
+          {matchedUsers.length > 0 && <DataTable users={matchedUsers} />}
         </Col>
       </Row>
     </>

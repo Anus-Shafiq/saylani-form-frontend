@@ -57,6 +57,8 @@ const getBase64 = (file) =>
 
 const { Option } = Select;
 
+const postUrl = import.meta.env.VITE_POST_API;
+
 const RegistrationForm = () => {
   const [previewOpen, setPreviewOpen] = useState(false);
   const [previewImage, setPreviewImage] = useState("");
@@ -87,24 +89,33 @@ const RegistrationForm = () => {
       values.dob = values.dob.format("YYYY-MM-DD");
     }
 
-    for (const key in values) {
-      formDataToSend.append(key, values[key]);
-    }
+    formDataToSend.append("address", values.address);
+    formDataToSend.append("city", values.city);
+    formDataToSend.append("cnic", values.cnic);
+    formDataToSend.append("computerProficiency", values.computerProficiency);
+    formDataToSend.append("country", values.country);
+    formDataToSend.append("course", values.course);
+    formDataToSend.append("dob", values.dob);
+    formDataToSend.append("email", values.email);
+    formDataToSend.append("fatherCnic", values.fatherCnic);
+    formDataToSend.append("fatherName", values.fatherName);
+    formDataToSend.append("fullName", values.fullName);
+    formDataToSend.append("gender", values.gender);
+    formDataToSend.append("laptop", values.laptop);
+    formDataToSend.append("phone", values.phone);
+    formDataToSend.append("qualification", values.qualification);
 
+    // Append the image file
     if (fileList.length > 0 && fileList[0].originFileObj) {
       formDataToSend.append("image", fileList[0].originFileObj);
     }
 
     try {
-      const response = await axios.post(
-        "http://localhost:5000//student/register",
-        formDataToSend,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-        }
-      );
+      const response = await axios.post(postUrl, formDataToSend, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
 
       alert(response.data.message);
     } catch (err) {
@@ -114,54 +125,6 @@ const RegistrationForm = () => {
 
     form.resetFields();
     setFileList([]);
-  };
-
-  const [formData, setFormData] = useState({
-    fullName: "",
-    fatherName: "",
-    cnic: "",
-    country: "",
-
-    course: "",
-    city: "",
-    phone: "",
-    email: "",
-    gender: "",
-    address: "",
-
-    qualification: "",
-    laptop: "",
-    computuerProficiency: "",
-    image: null,
-  });
-
-  const handleInput = (e) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-  };
-  const handleImage = ({ fileList }) => {
-    if (fileList.length > 0 && fileList[0].originFileObj) {
-      setFormData((prev) => ({
-        ...prev,
-        image: fileList[0].originFileObj,
-      }));
-    }
-  };
-  const handleSelect = (name, value) => {
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-  };
-
-  const handleDateChange = (date, dateString) => {
-    setFormData((prev) => ({
-      ...prev,
-      dob: dateString,
-    }));
   };
 
   return (
@@ -179,10 +142,7 @@ const RegistrationForm = () => {
             rules={[{ required: true }]}
             required={false}
           >
-            <Select
-              onChange={(value) => handleSelect("country", value)}
-              placeholder="Select country"
-            >
+            <Select placeholder="Select country">
               <Option value="pakistan">Pakistan</Option>
             </Select>
           </Form.Item>
@@ -194,10 +154,7 @@ const RegistrationForm = () => {
             rules={[{ required: true }]}
             required={false}
           >
-            <Select
-              onChange={(value) => handleSelect("city", value)}
-              placeholder="Select city"
-            >
+            <Select placeholder="Select city">
               <Option value="karachi">Karachi</Option>
               <Option value="islamabad">Islamabad</Option>
               <Option value="lahore">Lahore</Option>
@@ -214,10 +171,7 @@ const RegistrationForm = () => {
             rules={[{ required: true }]}
             required={false}
           >
-            <Select
-              onChange={(value) => handleSelect("course", value)}
-              placeholder="Select course or event"
-            >
+            <Select placeholder="Select course or event">
               <Option value="graphic-design">Graphic Design</Option>
               <Option value="web-development">Web Development</Option>
               <Option value="video-animation">Video Animation</Option>
@@ -231,10 +185,7 @@ const RegistrationForm = () => {
             rules={[{ required: true }]}
             required={false}
           >
-            <Select
-              onChange={(value) => handleSelect("computerProficiency", value)}
-              placeholder="Select your computer proficiency"
-            >
+            <Select placeholder="Select your computer proficiency">
               <Option value="none">None</Option>
               <Option value="beginner">Beginner</Option>
               <Option value="intermediate">Intermediate</Option>
@@ -250,7 +201,7 @@ const RegistrationForm = () => {
             rules={[{ required: true }]}
             required={false}
           >
-            <Input onChange={handleInput} placeholder="Full name" />
+            <Input placeholder="Full name" />
           </Form.Item>
         </Col>
         <Col xs={24} sm={24} md={12}>
@@ -260,7 +211,7 @@ const RegistrationForm = () => {
             rules={[{ required: true }]}
             required={false}
           >
-            <Input onChange={handleInput} placeholder="Father name" />
+            <Input placeholder="Father name" />
           </Form.Item>
         </Col>
 
@@ -277,7 +228,7 @@ const RegistrationForm = () => {
             ]}
             required={false}
           >
-            <Input onChange={handleInput} placeholder="Email" />
+            <Input placeholder="Email" />
           </Form.Item>
         </Col>
         <Col xs={24} sm={24} md={12}>
@@ -293,7 +244,7 @@ const RegistrationForm = () => {
             ]}
             required={false}
           >
-            <Input onChange={handleInput} placeholder="Phone" />
+            <Input placeholder="Phone" />
           </Form.Item>
         </Col>
 
@@ -310,7 +261,7 @@ const RegistrationForm = () => {
             ]}
             required={false}
           >
-            <Input onChange={handleInput} placeholder="CNIC" />
+            <Input placeholder="CNIC" />
           </Form.Item>
         </Col>
         <Col xs={24} sm={24} md={12}>
@@ -319,17 +270,13 @@ const RegistrationForm = () => {
             name="fatherCnic"
             rules={[
               {
-                required: true,
                 pattern: /^([0-9]{5})[\-]([0-9]{7})[\-]([0-9]{1})+/,
                 message: "Enter a CNIC number in format XXXXX-XXXXXXX-X",
               },
             ]}
             required={false}
           >
-            <Input
-              onChange={handleInput}
-              placeholder="Father's CNIC(optional)"
-            />
+            <Input placeholder="Father's CNIC" />
           </Form.Item>
         </Col>
 
@@ -340,11 +287,7 @@ const RegistrationForm = () => {
             required={false}
             rules={[{ required: CSSViewTransitionRule }]}
           >
-            <DatePicker
-              onChange={handleDateChange}
-              placeholder="mm/dd/yyyy"
-              style={{ width: "100%" }}
-            />
+            <DatePicker placeholder="mm/dd/yyyy" style={{ width: "100%" }} />
           </Form.Item>
         </Col>
         <Col xs={24} sm={24} md={12}>
@@ -354,10 +297,7 @@ const RegistrationForm = () => {
             required={false}
             rules={[{ required: true }]}
           >
-            <Select
-              onChange={(value) => handleSelect("gender", value)}
-              placeholder="Select gender"
-            >
+            <Select placeholder="Select gender">
               <Option value="male">Male</Option>
               <Option value="female">Female</Option>
               <Option value="other">Other</Option>
@@ -372,7 +312,7 @@ const RegistrationForm = () => {
             name="address"
             rules={[{ required: true }]}
           >
-            <Input onChange={handleInput} placeholder="Address" />
+            <Input placeholder="Address" />
           </Form.Item>
         </Col>
 
@@ -383,10 +323,7 @@ const RegistrationForm = () => {
             required={false}
             rules={[{ required: true }]}
           >
-            <Select
-              onChange={(value) => handleSelect("qualification", value)}
-              placeholder="Last qualification"
-            >
+            <Select placeholder="Last qualification">
               <Option value="matric">Matric</Option>
               <Option value="intermediate">Intermediate</Option>
               <Option value="underGraduate">UnderGraduate</Option>
@@ -403,10 +340,7 @@ const RegistrationForm = () => {
             required={false}
             rules={[{ required: true }]}
           >
-            <Select
-              onChange={(value) => handleSelect("laptop", value)}
-              placeholder="Do you have a Laptop?"
-            >
+            <Select placeholder="Do you have a Laptop?">
               <Option value="yes">Yes</Option>
               <Option value="no">No</Option>
             </Select>
@@ -416,8 +350,8 @@ const RegistrationForm = () => {
         <Col span={24}>
           <Form.Item
             required={false}
-            label="Picture"
             name="image"
+            label="Picture"
             rules={[{ required: true }]}
           >
             <div style={{ display: "flex", gap: 16 }}>
@@ -427,14 +361,12 @@ const RegistrationForm = () => {
                 fileList={fileList}
                 preview={false}
                 onPreview={handlePreview}
-                onChange={(e) => {
-                  handleChange(e);
-                  handleImage(e);
-                }}
+                onChange={handleChange}
                 showUploadList={{ showRemoveIcon: true }}
                 beforeUpload={() => false}
+                maxCount={1}
               >
-                {fileList.length >= 8 ? null : uploadButton}
+                {fileList.length >= 1 ? null : uploadButton}
               </Upload>
               {previewImage && (
                 <Image

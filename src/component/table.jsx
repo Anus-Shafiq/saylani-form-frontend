@@ -1,12 +1,7 @@
-import { Table, Button } from "antd";
+import { Table } from "antd";
 import PDFDownloadButton from "./card";
 
-const data = [
-  { key: "1", course: "John Brown", batch: 32 },
-  { key: "2", course: "Jim Green", batch: 42 },
-];
-
-const DataTable = () => {
+const DataTable = ({ users }) => {
   const columns = [
     {
       title: "Course/Event",
@@ -15,33 +10,18 @@ const DataTable = () => {
       width: 400,
     },
     {
-      title: "Batch",
-      dataIndex: "batch",
-      key: "batch",
+      title: "Name",
+      dataIndex: "fullName",
+      key: "name",
     },
     {
       title: "Action",
       key: "action",
-      render: (_, record) => (
-        <Button
-          type="primary"
-          size="small"
-          style={{
-            boxShadow: "none",
-          }}
-          onClick={() => handleDownload(record)}
-        >
-          <PDFDownloadButton />
-        </Button>
-      ),
+      render: (_, record) => <PDFDownloadButton user={record} />,
     },
   ];
 
-  const handleDownload = (record) => {
-    console.log("Download triggered for:", record);
-  };
-
-  return <Table columns={columns} dataSource={data} pagination={false} />;
+  return <Table columns={columns} dataSource={users} pagination={false} />;
 };
 
 export default DataTable;
